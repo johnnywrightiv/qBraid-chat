@@ -3,11 +3,97 @@ import { TreeViewProvider } from './commands/TreeViewProvider';
 import {
   getApiKey,
   validateApiKey,
-  sendPostRequest,
+  sendChat,
   getModels,
   promptForApiKey,
   deleteApiKey,
 } from './commands/apiHelpers';
+
+function getWebviewContent(): string {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>qBraid Chat</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 10px;
+          background-color: #f4f4f4;
+        }
+        #model-select {
+          margin-bottom: 10px;
+        }
+        #prompt-input {
+          width: 100%;
+          height: 50px;
+          margin-bottom: 10px;
+        }
+        #send-button {
+          background-color: #007acc;
+          color: white;
+          border: none;
+          padding: 10px;
+          cursor: pointer;
+        }
+        #send-button:hover {
+          background-color: #005f9c;
+        }
+        #response {
+          margin-top: 20px;
+          padding: 10px;
+          background-color: #fff;
+          border: 1px solid #ddd;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>qBraid Chat</h1>
+      <select id="model-select"></select>
+      <textarea id="prompt-input" placeholder="Enter your prompt here..."></textarea>
+      <button id="send-button">Send</button>
+      <div id="response"></div>
+      <script>
+        const vscode = acquireVsCodeApi();
+        const modelSelect = document.getElementById('model-select');
+        const sendButton = document.getElementById('send-button');
+        const responseDiv = document.getElementById('response');
+
+        // Fetch models
+        vscode.postMessage({ command: 'getModels' });
+
+        window.addEventListener('message', (event) => {
+          const { command, data } = event.data;
+
+          if (command === 'populateModels') {
+            modelSelect.innerHTML = data.map(model => 
+              \`<option value="\${model}">\${model}</option>\`
+            ).join('');
+          }
+
+          if (command === 'response') {
+            responseDiv.innerHTML = \`<strong>Response:</strong> <pre>\${data}</pre>\`;
+          }
+        });
+
+        sendButton.addEventListener('click', () => {
+          const model = modelSelect.value;
+          const prompt = document.getElementById('prompt-input').value;
+          if (!prompt) {
+            alert('Please enter a prompt!');
+            return;
+          }
+          vscode.postMessage({ command: 'sendPrompt', model, prompt });
+        });
+      </script>
+    </body>
+    </html>
+  `;
+}
+
 
 export function activate(context: vscode.ExtensionContext) {
   // Initialize status bar
@@ -42,6 +128,43 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(refreshTreeCommand);
 
   // Commands
+  const openChatCommand = vscode.commands.registerCommand('qbraid-chat.openChat', () => {
+    const panel = vscode.window.createWebviewPanel(
+      'qbraidChat',
+      'qBraid Chat',
+      vscode.ViewColumn.One,
+      { enableScripts: true }
+    );
+
+    panel.webview.html = getWebviewContent();
+
+    panel.webview.onDidReceiveMessage(async (message) => {
+      if (message.command === 'getModels') {
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+          panel.webview.postMessage({ command: 'error', message: 'API Key is missing!' });
+          return;
+        }
+
+        const models = await getModels(apiKey);
+        const modelNames = models.map((model: any) => model.model);
+        panel.webview.postMessage({ command: 'populateModels', data: modelNames });
+      }
+
+      if (message.command === 'sendPrompt') {
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+          panel.webview.postMessage({ command: 'error', message: 'API Key is missing!' });
+          return;
+        }
+
+        const { model, prompt } = message;
+        const response = await sendChat(apiKey, prompt, model);
+        panel.webview.postMessage({ command: 'response', data: response.content });
+      }
+    });
+  });
+
   const getDataCommand = vscode.commands.registerCommand('qbraid-chat.getData', async () => {
     const apiKey = await getApiKey();
 
@@ -77,7 +200,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     if (prompt) {
-      await sendPostRequest(apiKey, prompt);
+      await sendChat(apiKey, prompt);
     } else {
       vscode.window.showErrorMessage('You must provide a prompt!');
     }
@@ -104,6 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register commands
   context.subscriptions.push(
+    openChatCommand,
     getDataCommand,
     sendPromptCommand,
     getModelsCommand,

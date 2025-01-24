@@ -39,6 +39,10 @@
       {
         "command": "qbraid-chat.getModels",
         "title": "Get available models for qBraid chat"
+      },
+      {
+        "command": "qbraid-chat.openChat",
+        "title": "Open qBraid Chat"
       }
     ],
     "configuration": {

@@ -1,19 +1,16 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 
-// Function to get the API key from workspace settings
 export async function getApiKey(): Promise<string | undefined> {
   return vscode.workspace.getConfiguration().get('qbraid.apiKey') as string;
 }
 
-// Function to store the API key securely in settings
 export async function storeApiKey(apiKey: string): Promise<void> {
   await vscode.workspace
     .getConfiguration()
     .update('qbraid.apiKey', apiKey, vscode.ConfigurationTarget.Global);
 }
 
-// Function to prompt for API key input
 export async function promptForApiKey(): Promise<string | undefined> {
   const apiKey = await vscode.window.showInputBox({
     prompt: 'Enter your qBraid API key',
@@ -31,7 +28,6 @@ export async function promptForApiKey(): Promise<string | undefined> {
   return undefined;
 }
 
-// Function to delete the API key
 export async function deleteApiKey(): Promise<void> {
   const confirmation = await vscode.window.showWarningMessage(
     'Are you sure you want to delete your qBraid API key?',
@@ -47,7 +43,6 @@ export async function deleteApiKey(): Promise<void> {
   }
 }
 
-// Function to validate the API key with qBraid API
 export async function validateApiKey(apiKey: string): Promise<boolean> {
   try {
     const options = {
@@ -76,8 +71,7 @@ export async function validateApiKey(apiKey: string): Promise<boolean> {
   }
 }
 
-// Function to send POST request to qBraid API
-export async function sendPostRequest(apiKey: string | undefined, prompt: string, model: string = 'gpt-4o-mini') {
+export async function sendChat(apiKey: string | undefined, prompt: string, model: string = 'gpt-4o-mini') {
   try {
     const response = await axios.post(
       'https://api.qbraid.com/api/chat',
@@ -104,7 +98,6 @@ export async function sendPostRequest(apiKey: string | undefined, prompt: string
   }
 }
 
-// Function to send GET request to qBraid API for model selection
 export async function getModels(apiKey: string) {
   try {
     const response = await axios.get(
