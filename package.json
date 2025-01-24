@@ -1,90 +1,103 @@
 {
-	"name": "qbraid-chat",
-	"displayName": "qBraid-chat",
-	"description": "Visual Studio Code chat extension that interacts with qBraid REST API Endpoints",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.96.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:qbraid-chat.getData",
-		"onCommand:qbraid-chat.setApiKey",
-		"onCommand:qbraid-chat.deleteApiKey",
-		"onCommand:qbraid-chat.sendPrompt",
-		"onCommand:qbraid-chat.getModels",
-		"onCommand:qbraid-chat.showSidebar"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "qbraid-chat.getData",
-				"title": "Get data from API (qBraid test)"
-			},
-			{
-				"command": "qbraid-chat.setApiKey",
-				"title": "Set qBraid API Key"
-			},
-			{
-				"command": "qbraid-chat.deleteApiKey",
-				"title": "Delete qBraid API Key"
-			},
-			{
-				"command": "qbraid-chat.sendPrompt",
-				"title": "Send prompt to qBraid chat"
-			},
-			{
-				"command": "qbraid-chat.getModels",
-				"title": "Get available models for qBraid chat"
-			},
-			{
-        "command": "qbraid-chat.showSidebar",
-        "title": "Show qBraid Sidebar"
+  "name": "qbraid-chat",
+  "displayName": "qBraid-chat",
+  "description": "Visual Studio Code chat extension that interacts with qBraid REST API Endpoints",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:qbraid-chat.getData",
+    "onCommand:qbraid-chat.setApiKey",
+    "onCommand:qbraid-chat.deleteApiKey",
+    "onCommand:qbraid-chat.sendPrompt",
+    "onCommand:qbraid-chat.getModels",
+    "onView:qbraidView"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "qbraid-chat.getData",
+        "title": "Get data from API (qBraid test)"
+      },
+      {
+        "command": "qbraid-chat.setApiKey",
+        "title": "Set qBraid API Key"
+      },
+      {
+        "command": "qbraid-chat.deleteApiKey",
+        "title": "Delete qBraid API Key"
+      },
+      {
+        "command": "qbraid-chat.sendPrompt",
+        "title": "Send prompt to qBraid chat"
+      },
+      {
+        "command": "qbraid-chat.getModels",
+        "title": "Get available models for qBraid chat"
       }
-		],
-		"configuration": {
-			"type": "object",
-			"properties": {
-				"qbraid.apiKey": {
-					"type": "string",
-					"default": "",
-					"description": "The API key used to authenticate with the qBraid API"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"package": "webpack --mode production --devtool hidden-source-map",
-		"compile-tests": "tsc -p . --outDir out",
-		"watch-tests": "tsc -p . -w --outDir out",
-		"pretest": "npm run compile-tests && npm run compile && npm run lint",
-		"lint": "eslint src",
-		"test": "vscode-test"
-	},
-	"devDependencies": {
-		"@types/jest": "^29.5.14",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "20.x",
-		"@types/vscode": "^1.96.0",
-		"@typescript-eslint/eslint-plugin": "^8.17.0",
-		"@typescript-eslint/parser": "^8.17.0",
-		"@vscode/test-cli": "^0.0.10",
-		"@vscode/test-electron": "^2.4.1",
-		"eslint": "^9.16.0",
-		"jest": "^29.7.0",
-		"ts-jest": "^29.2.5",
-		"ts-loader": "^9.5.1",
-		"typescript": "^5.7.2",
-		"webpack": "^5.95.0",
-		"webpack-cli": "^5.1.4"
-	},
-	"dependencies": {
-		"axios": "^1.7.9"
-	}
+    ],
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "qbraid.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "The API key used to authenticate with the qBraid API"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "qbraid",
+          "title": "qBraid",
+          "icon": "resources/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "qbraid": [
+        {
+          "id": "qbraidView",
+          "name": "Settings"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
+  }
 }
