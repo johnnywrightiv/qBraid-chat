@@ -119,18 +119,20 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   private async handleSendPrompt(webviewView: vscode.WebviewView, message: any) {
-    const apiKey = await getApiKey()
+    const apiKey = await getApiKey();
     if (!apiKey) {
-      webviewView.webview.postMessage({ command: "error", message: "API Key is missing!" })
-      return
+      webviewView.webview.postMessage({ command: 'error', message: 'API Key is missing!' });
+      return;
     }
 
-    const { model, prompt } = message
+    const { model, prompt } = message;
+
     try {
-      const response = await sendChat(apiKey, prompt, model)
-      webviewView.webview.postMessage({ command: "response", data: response.content })
+      await sendChat(apiKey, prompt, model, (chunk) => {
+        webviewView.webview.postMessage({ command: 'responseChunk', data: chunk });
+      });
     } catch (error) {
-      webviewView.webview.postMessage({ command: "error", message: "Failed to send prompt." })
+      webviewView.webview.postMessage({ command: 'error', message: 'Failed to send prompt.' });
     }
   }
 
@@ -315,11 +317,14 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
                 \`<option value="\${model}">\${model}</option>\`
               ).join('');
               break;
-            case 'response':
-              const assistantMessage = document.createElement('div');
-              assistantMessage.className = 'message assistant-message';
-              assistantMessage.textContent = data;
-              chatHistory.appendChild(assistantMessage);
+            case 'responseChunk':
+              let assistantMessage = chatHistory.querySelector('.assistant-message:last-child');
+              if (!assistantMessage || assistantMessage.getAttribute('data-complete') === 'true') {
+                assistantMessage = document.createElement('div');
+                assistantMessage.className = 'message assistant-message';
+                chatHistory.appendChild(assistantMessage);
+              }
+              assistantMessage.textContent += data; // Append incoming chunk
               chatHistory.scrollTop = chatHistory.scrollHeight;
               break;
             case 'error':

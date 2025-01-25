@@ -71,24 +71,6 @@ export async function validateApiKey(apiKey: string): Promise<boolean> {
   }
 }
 
-export async function sendChat(apiKey: string | undefined, prompt: string, model: string = 'gpt-4o-mini') {
-  try {
-    const response = await axios.post(
-      'https://api.qbraid.com/api/chat',
-      { prompt: prompt, model: model, stream: false },
-      { headers: { 'api-key': apiKey, 'Content-Type': 'application/json' } }
-    );
-    
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      vscode.window.showErrorMessage(`Request failed: ${error.response?.data?.message || error.message}`);
-    } else {
-      vscode.window.showErrorMessage(`Unexpected error: ${error}`);
-    }
-  }
-}
-
 export async function getModels(apiKey: string) {
   try {
     const response = await axios.get(
@@ -112,5 +94,26 @@ export async function getModels(apiKey: string) {
     } else {
       vscode.window.showErrorMessage(`Unexpected error: ${error}`);
     }
+  }
+}
+
+export async function sendChat(apiKey: string, prompt: string, model: string, onChunk: (chunk: string) => void) {
+  const response = await fetch('https://api.qbraid.com/api/chat', {
+    method: 'POST',
+    headers: {
+      'api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt, model, stream: true }),
+  });
+
+  const reader = response.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value, { stream: true });
+    onChunk(chunk); // Send the chunk to the handler
   }
 }
