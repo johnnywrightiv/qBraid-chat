@@ -79,15 +79,6 @@ export async function sendChat(apiKey: string | undefined, prompt: string, model
       { headers: { 'api-key': apiKey, 'Content-Type': 'application/json' } }
     );
     
-    // Directly use the content field
-    const responseContent = response.data.content;
-    const tokenUsage = response.data.usage;
-    
-    vscode.window.showInformationMessage(`Response: ${responseContent}`);
-    
-    // Optional: Show token usage details
-    console.log('Token Usage:', tokenUsage);
-    
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -113,8 +104,6 @@ export async function getModels(apiKey: string) {
     const modelDetails = response.data.map((model: any) => 
       `${model.model}, `
     );
-
-    vscode.window.showInformationMessage(`Available Models:\n${modelDetails.join('\n')}`);
 
     return response.data;
   } catch (error) {

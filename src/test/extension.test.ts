@@ -2,14 +2,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as extension from '../extension';
 
-suite('Extension Tests', () => {
-	test('should execute the getData command and show a message', async () => {
-		const response = await vscode.commands.executeCommand(
-			'qbraid-chat.getData'
-		);
-		assert.strictEqual(response, undefined); 
-  });
-  
+suite('Extension Tests', () => {  
 	test('should execute the getModels command and show a message', async () => {
 		const response = await vscode.commands.executeCommand(
 			'qbraid-chat.getModels'

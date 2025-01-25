@@ -1,11 +1,16 @@
-## TODO:
+## DONE:
 [x] Setup project structure
 [x] Authenticate with qBraid API
-[x] Create commands for chat and key management
-[x] Create treeview to run commands in sidebar and open webview
-[ ] Create webview(s) for UI (chat interface and api key management)
-[ ] Stream responses back to the user (chat interface)
-[ ] Use getModels to populate the models dropdown for sendPrompt (chat interface)
+[x] Create commands for API interactions
+[x] Create view to run commands in sidebar
+[x] Create webviews for UI (chat interface and api key management)
+[x] Use getModels to populate the models dropdown
+[x] Add logo & Improve chat UI 
+
+## TODO:
+[ ] Add skeleton for chat UI
+[ ] Stream responses back to the user
+[ ] Break up chat functionality into separate files
 [ ] Extend the chat functionality to handle real-time server requests to other qBraid API endpoints to answer platform-specific questions
 
 

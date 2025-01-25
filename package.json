@@ -10,7 +10,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:qbraid-chat.getData",
     "onCommand:qbraid-chat.setApiKey",
     "onCommand:qbraid-chat.deleteApiKey",
     "onCommand:qbraid-chat.sendPrompt",
@@ -20,10 +19,6 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "qbraid-chat.getData",
-        "title": "Get data from API (qBraid test)"
-      },
       {
         "command": "qbraid-chat.setApiKey",
         "title": "Set qBraid API Key"
@@ -58,17 +53,18 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "qbraid",
+          "id": "chatSidebar",
           "title": "qBraid",
           "icon": "resources/icon.png"
         }
       ]
     },
     "views": {
-      "qbraid": [
+      "chatSidebar": [
         {
-          "id": "qbraidView",
-          "name": "Settings"
+          "id": "chatView",
+          "name": "Chat",
+          "type": "webview"
         }
       ]
     }
