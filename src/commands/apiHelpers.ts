@@ -82,11 +82,6 @@ export async function getModels(apiKey: string) {
       }
     );
 
-    // Correctly extract model details
-    const modelDetails = response.data.map((model: any) => 
-      `${model.model}, `
-    );
-
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -115,5 +110,35 @@ export async function sendChat(apiKey: string, prompt: string, model: string, on
 
     const chunk = decoder.decode(value, { stream: true });
     onChunk(chunk); // Send the chunk to the handler
+  }
+}
+
+// Not exactly a real-time websocket connection, but it's a quick solution
+export async function getQuantumDevicesStatus(apiKey: string) {
+  try {
+    const response = await axios.get('https://api.qbraid.com/api/quantum-devices', {
+      headers: {
+        'api-key': apiKey,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching device status:', error);
+    throw new Error('Failed to retrieve device status');
+  }
+}
+
+// Not exactly a real-time websocket connection, but it's a quick solution
+export async function getQuantumJobsStatus(apiKey: string) {
+  try {
+    const response = await axios.get('https://api.qbraid.com/api/quantum-jobs', {
+      headers: {
+        'api-key': apiKey,
+      },
+    });
+    return response.data.jobsArray;
+  } catch (error) {
+    console.error('Error fetching job status:', error);
+    throw new Error('Failed to retrieve job status');
   }
 }

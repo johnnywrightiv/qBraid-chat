@@ -1,4 +1,4 @@
-## DONE:
+## TODO:
 [x] Setup project structure
 [x] Authenticate with qBraid API
 [x] Create commands for API interactions
@@ -6,18 +6,13 @@
 [x] Create webviews for UI (chat interface and api key management)
 [x] Use getModels to populate the models dropdown
 [x] Add logo & Improve chat UI 
-
-## TODO:
-[ ] Add skeleton for chat UI
-[ ] Stream responses back to the user
-[ ] Break up chat functionality into separate files
+[x] Stream responses back to the user
+[ ] Clean up code
 [ ] Extend the chat functionality to handle real-time server requests to other qBraid API endpoints to answer platform-specific questions
 
 
 ## Goal
 Create a Visual Studio Code chat extension that interacts with [qBraid REST API Endpoints](https://docs.qbraid.com/api-reference/user-guide/introduction).
-
-### Level 0: Basic Chat Interface
 1. Enable the chat extension to make authenticated requests to the qBraid API with a user's API Key. This can be achieved using:
    - A prompt,
    - A settings tab,
@@ -25,15 +20,10 @@ Create a Visual Studio Code chat extension that interacts with [qBraid REST API 
    - Or any other approach you prefer.
 2. Send chat messages via [`POST` `/chat`](https://docs.qbraid.com/api-reference/rest/post-chat) and stream responses back to the user.
 3. Allow users to select which model to use based on the models listed by [`GET` `/chat/models`](https://docs.qbraid.com/api-reference/rest/get-chat-models).
-
-### Level 1: Agentic Behavior (Optional)
-1. First, complete all tasks in **Level 0**.
-2. Extend the chat functionality to handle real-time server requests to other qBraid API endpoints to answer platform-specific questions, such as:
+4. Extend the chat functionality to handle real-time server requests to other qBraid API endpoints to answer platform-specific questions, such as:
    - "What quantum devices available through qBraid are currently online and available?"
    - "What is the status of the most recent quantum job I submitted to the qBraid QIR simulator?"
 
-## Development Guidelines
-- You may develop the extension using any framework(s) that you choose.
 
 ## Packaging Requirements
 Your project must include a script to package the extension using [`@vscode/vsce`](https://www.npmjs.com/package/@vscode/vsce). The script should generate a `.vsix` file named `qbraid-chat-0.1.0.vsix` in the root directory. Ensure the following commands work as expected:

@@ -6,6 +6,8 @@ import {
   deleteApiKey,
   sendChat,
   getModels,
+  getQuantumDevicesStatus,
+  getQuantumJobsStatus,
 } from "./commands/apiHelpers"
 
 let statusBarItem: vscode.StatusBarItem
@@ -71,8 +73,8 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
 
   resolveWebviewView(
     webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    token: vscode.CancellationToken,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken,
   ) {
     webviewView.webview.options = {
       enableScripts: true,
@@ -101,6 +103,25 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
       }
     })
   }
+  
+
+  private async handleCheckApiKey(webviewView: vscode.WebviewView) {
+    const apiKey = await getApiKey()
+    webviewView.webview.postMessage({ command: "apiKeyStatus", status: !!apiKey })
+  }
+
+  private async handleSaveApiKey(webviewView: vscode.WebviewView, message: any) {
+    const apiKey = message.apiKey
+    await storeApiKey(apiKey)
+    updateStatusBar(true)
+    webviewView.webview.postMessage({ command: "apiKeySaved" })
+  }
+
+  private async handleDeleteApiKey(webviewView: vscode.WebviewView) {
+    await deleteApiKey()
+    updateStatusBar(false)
+    webviewView.webview.postMessage({ command: "apiKeyDeleted" })
+  }
 
   private async handleGetModels(webviewView: vscode.WebviewView) {
     const apiKey = await getApiKey()
@@ -128,30 +149,68 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
     const { model, prompt } = message;
 
     try {
-      await sendChat(apiKey, prompt, model, (chunk) => {
-        webviewView.webview.postMessage({ command: 'responseChunk', data: chunk });
-      });
+      // Handling quantum jobs query
+      if (prompt.toLowerCase().includes('jobs') || prompt.toLowerCase().includes('job status')) {
+        const jobs = await getQuantumJobsStatus(apiKey);
+        if (jobs.length === 0) {
+          webviewView.webview.postMessage({
+            command: 'responseChunk',
+            data: `No active quantum jobs found.`
+          });
+        } else {
+          for (const job of jobs) {
+            const jobText = `Job ID: ${job.qbraidJobId}, Status: ${job.status}, Created At: ${job.timeStamps.createdAt}`;
+            webviewView.webview.postMessage({
+              command: 'responseChunk',
+              data: jobText
+            });
+            // Delay to simulate streaming or chunked responses
+            await this.delay(100); // Optional: Adjust delay as needed
+          }
+        }
+      }
+
+      // Handling quantum devices query
+      else if (prompt.toLowerCase().includes('device') || prompt.toLowerCase().includes('available devices')) {
+        const devices = await getQuantumDevicesStatus(apiKey);
+        if (devices.length === 0) {
+          webviewView.webview.postMessage({
+            command: 'responseChunk',
+            data: `No devices found.`
+          });
+        } else {
+          webviewView.webview.postMessage({
+            command: 'responseChunk',
+            data: `qBraid Quantum Devices:`
+          });
+
+          // Iterate over each device and send the details one by one
+          for (const device of devices) {
+            const deviceText = `• Device: ${device.name}, Status: ${device.status}, Available: ${device.isAvailable ? 'Yes' : 'No'}`;
+            webviewView.webview.postMessage({
+              command: 'responseChunk',
+              data: deviceText
+            });
+            // Delay to simulate streaming or chunked responses
+            await this.delay(100); // Optional: Adjust delay as needed
+          }
+        }
+      }
+
+
+      // Fallback to model-based response if no matches
+      else {
+        await sendChat(apiKey, prompt, model, (chunk) => {
+          webviewView.webview.postMessage({ command: 'responseChunk', data: chunk });
+        });
+      }
     } catch (error) {
-      webviewView.webview.postMessage({ command: 'error', message: 'Failed to send prompt.' });
+      webviewView.webview.postMessage({ command: 'error', message: error });
     }
   }
 
-  private async handleCheckApiKey(webviewView: vscode.WebviewView) {
-    const apiKey = await getApiKey()
-    webviewView.webview.postMessage({ command: "apiKeyStatus", status: !!apiKey })
-  }
-
-  private async handleSaveApiKey(webviewView: vscode.WebviewView, message: any) {
-    const apiKey = message.apiKey
-    await storeApiKey(apiKey)
-    updateStatusBar(true)
-    webviewView.webview.postMessage({ command: "apiKeySaved" })
-  }
-
-  private async handleDeleteApiKey(webviewView: vscode.WebviewView) {
-    await deleteApiKey()
-    updateStatusBar(false)
-    webviewView.webview.postMessage({ command: "apiKeyDeleted" })
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private getWebviewContent(): string {
@@ -165,8 +224,8 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       <style>
         :root {
-          --send-button-bg: #db0c81; /* Custom button background color */
-          --send-button-bg-hover: #a810c2; /* Custom button hover color */
+          --send-button-bg: #db0c81;
+          --send-button-bg-hover: #a810c2;
         }
 
         body {
@@ -183,6 +242,7 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
           display: flex;
           flex-direction: column;
           height: 100%;
+          width: 100%;
         }
         h1 {
           font-size: 18px;
@@ -243,7 +303,7 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
           margin-bottom: 20px;
           padding: 12px;
           border-radius: 4px;
-          max-width: 80%;
+          max-width: 100%;
         }
         .user-message {
           background-color: var(--vscode-textBlockQuote-background);
