@@ -13,18 +13,14 @@ import {
 let statusBarItem: vscode.StatusBarItem
 
 export function activate(context: vscode.ExtensionContext) {
-  // Create status bar item
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100)
   context.subscriptions.push(statusBarItem)
 
-  // Check for API key on activation
   checkApiKey()
 
-  // Register Webview View Provider
   const provider = new ChatViewProvider(context)
   context.subscriptions.push(vscode.window.registerWebviewViewProvider("chatView", provider))
 
-  // Register Commands
   context.subscriptions.push(
     vscode.commands.registerCommand("qbraid-chat.setApiKey", setApiKey),
     vscode.commands.registerCommand("qbraid-chat.deleteApiKey", deleteApiKey),
@@ -68,6 +64,10 @@ function updateStatusBar(isConnected: boolean) {
   statusBarItem.show()
 }
 
+export function deactivate() {
+  statusBarItem.dispose()
+}
+
 class ChatViewProvider implements vscode.WebviewViewProvider {
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -103,7 +103,6 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
       }
     })
   }
-  
 
   private async handleCheckApiKey(webviewView: vscode.WebviewView) {
     const apiKey = await getApiKey()
@@ -149,8 +148,8 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
     const { model, prompt } = message;
 
     try {
-      // Handling quantum jobs query
-      if (prompt.toLowerCase().includes('jobs') || prompt.toLowerCase().includes('job status')) {
+      // Handle "jobs" query
+      if (prompt.toLowerCase().includes('job')) {
         const jobs = await getQuantumJobsStatus(apiKey);
         if (jobs.length === 0) {
           webviewView.webview.postMessage({
@@ -164,14 +163,13 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
               command: 'responseChunk',
               data: jobText
             });
-            // Delay to simulate streaming or chunked responses
-            await this.delay(100); // Optional: Adjust delay as needed
+            await this.delay(100);
           }
         }
       }
 
-      // Handling quantum devices query
-      else if (prompt.toLowerCase().includes('device') || prompt.toLowerCase().includes('available devices')) {
+      // Handle "devices" query
+      else if (prompt.toLowerCase().includes('device')) {
         const devices = await getQuantumDevicesStatus(apiKey);
         if (devices.length === 0) {
           webviewView.webview.postMessage({
@@ -184,21 +182,18 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
             data: `qBraid Quantum Devices:`
           });
 
-          // Iterate over each device and send the details one by one
           for (const device of devices) {
-            const deviceText = `• Device: ${device.name}, Status: ${device.status}, Available: ${device.isAvailable ? 'Yes' : 'No'}`;
+            const deviceText = ` • Device: ${device.name}, Status: ${device.status}, Available: ${device.isAvailable ? 'Yes' : 'No'}`;
             webviewView.webview.postMessage({
               command: 'responseChunk',
               data: deviceText
             });
-            // Delay to simulate streaming or chunked responses
-            await this.delay(100); // Optional: Adjust delay as needed
+            await this.delay(100);
           }
         }
       }
 
-
-      // Fallback to model-based response if no matches
+      // Use model-based response if no term matches
       else {
         await sendChat(apiKey, prompt, model, (chunk) => {
           webviewView.webview.postMessage({ command: 'responseChunk', data: chunk });
@@ -235,7 +230,7 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
           margin: 0;
           display: flex;
           flex-direction: column;
-          height: 90vh;
+          height: 92vh;
           padding: 20px;
         }
         .container {
@@ -273,7 +268,7 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
         }
         #prompt-input {
           flex-grow: 1;
-          height: 40px; /* Smaller height */
+          height: 30px;
           padding: 10px;
           background-color: var(--vscode-input-background);
           color: var(--vscode-input-foreground);
@@ -384,7 +379,7 @@ class ChatViewProvider implements vscode.WebviewViewProvider {
                 assistantMessage.className = 'message assistant-message';
                 chatHistory.appendChild(assistantMessage);
               }
-              assistantMessage.textContent += data; // Append incoming chunk
+              assistantMessage.textContent += data;
               chatHistory.scrollTop = chatHistory.scrollHeight;
               break;
             case 'error':

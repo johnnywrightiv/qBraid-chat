@@ -10,10 +10,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:qbraid-chat.setApiKey",
-    "onCommand:qbraid-chat.deleteApiKey",
-    "onCommand:qbraid-chat.sendPrompt",
-    "onCommand:qbraid-chat.getModels",
     "onView:qbraidView"
   ],
   "main": "./dist/extension.js",
@@ -26,18 +22,6 @@
       {
         "command": "qbraid-chat.deleteApiKey",
         "title": "Delete qBraid API Key"
-      },
-      {
-        "command": "qbraid-chat.sendPrompt",
-        "title": "Send prompt to qBraid chat"
-      },
-      {
-        "command": "qbraid-chat.getModels",
-        "title": "Get available models for qBraid chat"
-      },
-      {
-        "command": "qbraid-chat.openChat",
-        "title": "Open qBraid Chat"
       }
     ],
     "configuration": {

@@ -7,8 +7,11 @@
 [x] Use getModels to populate the models dropdown
 [x] Add logo & Improve chat UI 
 [x] Stream responses back to the user
-[ ] Clean up code
-[ ] Extend the chat functionality to handle real-time server requests to other qBraid API endpoints to answer platform-specific questions
+[x] Temporarily get devices and jobs from the qBraid API
+[ ] Setup express server 
+[ ] Connect websockets for real-time communication
+[ ] Compare user input with platform specific details
+[ ] Stream real-time server responses back to the user
 
 
 ## Goal
