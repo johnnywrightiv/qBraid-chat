@@ -54,6 +54,8 @@ export function getWebviewContent(): string {
       #prompt-container {
         display: flex;
         gap: 10px;
+        width: 100%;
+        flex-wrap: no-wrap;
       }
       #prompt-input {
         flex-grow: 1;
@@ -63,6 +65,7 @@ export function getWebviewContent(): string {
         color: var(--vscode-input-foreground);
         border: 1px solid var(--vscode-input-border);
         border-radius: 4px;
+        min-width: 50px;
       }
       .button {
         background-color: var(--send-button-bg);
@@ -76,6 +79,8 @@ export function getWebviewContent(): string {
         align-items: center;
         justify-content: center;
         font-size: 14px;
+        min-width: 30px;
+        flex-shrink: 0;
       }
       .button i {
         margin-right: 5px;
