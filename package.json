@@ -1,6 +1,10 @@
 {
   "name": "qbraid-chat",
   "publisher": "johnnywright",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnnywrightiv/qBraid-chat"
+  },
   "displayName": "qBraid-chat",
   "description": "Visual Studio Code chat extension that interacts with qBraid REST API Endpoints",
   "version": "0.1.0",
