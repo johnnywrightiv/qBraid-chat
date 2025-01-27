@@ -1,71 +1,46 @@
-# qbraid-chat README
+# README: qBraid Chat Extension for VS Code
 
-This is the README for your extension "qbraid-chat". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+## Overview
+The **qBraid Chat Extension** is a Visual Studio Code extension designed to interact with the [qBraid REST API](https://docs.qbraid.com/api-reference/user-guide/introduction). It allows users to authenticate with their qBraid API Key, send chat messages to qBraid's endpoints, and query platform-specific resources like quantum devices and job statuses.
 
 ---
 
-## Following extension guidelines
+## Features
+- **Authenticate Easily**: Authenticate with your qBraid API Key. (This can be done from a prompt or from the command palette.)
+- **Chat Interface**: Send messages to qBraid’s chat endpoint (`POST /chat`) and receive real-time streamed responses.
+- **Model Selection**: Choose from available models populated via the `GET /chat/models` endpoint.
+- **Platform Queries**: Check:
+  - Available quantum devices.
+  - Status of recent quantum jobs.
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+---
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## Installation
 
-## Working with Markdown
+### Prerequisites
+- Visual Studio Code installed.
+- Node.js and npm installed (for development).
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+### Installation Steps
+1. Download the extension file `qbraid-chat-0.1.0.vsix` from the provided source.
+2. Open your terminal and install the extension:
+   ```bash
+   code --install-extension "qbraid-chat-0.1.0.vsix"
+   ```
 
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+---
 
-## For more information
+## Usage
+1. Open the qBraid Chat Extension sidebar in Visual Studio Code.
+2. Authenticate with your qBraid API Key.
+3. Use the chat interface to:
+   - Send messages to qBraid’s chat endpoint.
+   - Query quantum devices or job statuses.
+4. Select your preferred model from the dropdown populated dynamically from the API.
+5. Enjoy real-time responses and platform-specific insights.
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+---
 
-**Enjoy!**
+## Resources
+- [qBraid API Documentation](https://docs.qbraid.com/api-reference/user-guide/introduction)
+- [VS Code Extension API Documentation](https://code.visualstudio.com/api)
